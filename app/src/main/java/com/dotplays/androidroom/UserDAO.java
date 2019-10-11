@@ -20,5 +20,5 @@ public interface UserDAO {
 
     // xóa 1 User
     @Delete
-    void delete(User user);
+    int delete(User user);
 }

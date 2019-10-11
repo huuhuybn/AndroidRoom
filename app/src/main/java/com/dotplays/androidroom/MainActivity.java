@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.dotplays.androidroom.thread.UserQueryTask;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -40,9 +42,29 @@ public class MainActivity extends AppCompatActivity {
                 AppDatabase.class, "user.db").allowMainThreadQueries().build();
 
         // lấy danh sách User
-        List<User> users = db.userDao().getAll();
-        this.users.addAll(users);
-        userAdapter.notifyDataSetChanged();
+
+        UserQueryTask userQueryTask = new UserQueryTask(this);
+
+        userQueryTask.getAllUsers(new UserQueryTask.OnQuery<List<User>>() {
+            @Override
+            public void onResult(List<User> users) {
+                MainActivity.this.users.addAll(users);
+                Log.e("ABC", users.size() + "");
+                userAdapter.notifyDataSetChanged();
+            }
+        });
+
+        User user = new User();
+        user.id = new Random().nextInt();
+        user.name = "Huy Nguyen";
+        user.phone = "0913456789";
+
+        userQueryTask.insertUsers(new UserQueryTask.OnQuery<long[]>() {
+            @Override
+            public void onResult(long[] longs) {
+                // kết quả trả về là 1 array long, nếu thành công là 1 giá trị > 0
+            }
+        },user);
 
 
     }
